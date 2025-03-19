@@ -12,13 +12,15 @@ body {
 }
 
 header {
-	font-size: 15px;
+	user-select: none;
+	font-size: 14px;
+	color: aliceblue;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 60px;
-	background-color: rgb(206, 219, 219);
-	/* filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.662)); */
+	background-color: rgb(85, 31, 155);
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
 main {
@@ -32,9 +34,34 @@ canvas {
 }
 
 aside {
-	display: none;
 	position: absolute;
+	align-self: flex-end;
+	right: -100%;
+	top: 60px;
 	width: 300px;
 	height: 100%;
 	background-color: chartreuse;
+	transition: all 0.2s ease-in-out;
+}
+
+aside.visible {
+	right: 0px;
+}
+
+#menu-button {
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 70px;
+	width: 50px;
+	height: 50px;
+	background-color: rgb(85, 31, 155);
+	border: unset;
+	border-radius: 10px;
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+	transition: all 0.2s ease-in-out;
+}
+
+#menu-button.visible {
+	right: 310px;
 }

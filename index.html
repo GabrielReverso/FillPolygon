@@ -14,8 +14,17 @@
     </header>
     <main>
         <canvas width="2000" height="2000"></canvas>
-        <aside></aside>
+        <aside id="menu"></aside>
+        <button id="menu-button" onclick="ToggleMenu()"></button>
     </main>
+    <script>
+        const ToggleMenu = () => {
+            const menu = document.getElementById('menu')
+            const menuButton = document.getElementById('menu-button')
+            menu.classList.toggle('visible')
+            menuButton.classList.toggle('visible')
+        }
+    </script>
     <script src="./script.js"></script>
 </body>
 
