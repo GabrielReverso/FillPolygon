@@ -1,0 +1,38 @@
+* {
+    margin: unset;
+    padding: unset;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+    
+header {
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    background-color: rgb(206, 219, 219);
+    /* filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.662)); */
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px);
+}
+
+canvas {
+    width: 500px;   /* Deve ser igual ao width do HTML */
+    height: 500px;  /* Deve ser igual ao height do HTML */
+}
+
+aside {
+    width: 300px;
+    background-color: chartreuse;
+}
