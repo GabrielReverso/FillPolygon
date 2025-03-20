@@ -7,7 +7,24 @@ const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 
 //IIFE (Immediately Invoked Function Expression) to create the canvas grid
-(function DrawGrid() {
+(() => DrawGrid())();
+
+// Variables
+let hasListener = true
+const canvasArea = canvas.getBoundingClientRect();
+const nodeArray = []
+const firstNode = {
+    x: 0,
+    y: 0
+}
+Object.seal(firstNode)
+
+// Add click event to canvas
+canvas.addEventListener('click', ClickHandle);
+
+/***********************FUNCTIONS***********************/
+
+function DrawGrid() {
     const cellSize = 20
     const color = '#cccccc57'
     // Grid style
@@ -31,19 +48,13 @@ const windowHeight = window.innerHeight;
     }
 
     ctx.closePath()
-})();
-
-// Variables
-const canvasArea = canvas.getBoundingClientRect();
-const nodeArray = []
-const firstNode = {
-    x: 0,
-    y: 0
 }
-Object.seal(firstNode)
 
-// Add click event to canvas
-canvas.addEventListener('click', function (event) {
+function ClickHandle(event) {
+    // Remove first node from array
+    if (nodeArray.length === 2) {
+        nodeArray.shift()
+    }
 
     // Get mouse coordinates
     const x_pos = event.clientX - canvasArea.left;
@@ -63,28 +74,45 @@ canvas.addEventListener('click', function (event) {
 
     // If nodeArray has 2 nodes, draw a line and shift the older value
     if (nodeArray.length === 2) {
-        ctx.beginPath();
-        ctx.moveTo(nodeArray[0].x, nodeArray[0].y)
-        ctx.lineTo(nodeArray[1].x, nodeArray[1].y)
-        ctx.strokeStyle = 'black'
-        ctx.stroke();
-        ctx.closePath();
-        nodeArray.shift()
+        DrawLine();
     }
-});
+}
 
-/***********************FUNCTIONS***********************/
-
-/**
- * Draw a node in a given position
- * 
- * @param {number} x 
- * @param {number} y 
- */
 function DrawNode(x, y) {
     ctx.beginPath();
     ctx.arc(x, y, 2, 0, Math.PI * 2);
     ctx.fillStyle = 'red';
     ctx.fill();
     ctx.closePath();
+}
+
+function DrawLine() {
+    ctx.beginPath();
+    ctx.moveTo(nodeArray[0].x, nodeArray[0].y)
+    ctx.lineTo(nodeArray[1].x, nodeArray[1].y)
+    ctx.strokeStyle = 'black'
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function ClosePolygon() {
+    if (nodeArray.length === 2) {
+        nodeArray.shift();
+        nodeArray.push(firstNode);
+        DrawLine();
+        nodeArray.splice(0, nodeArray.length)
+        canvas.removeEventListener('click', ClickHandle);
+        hasListener = false
+    } else {
+        return
+    }
+}
+
+function Reset() {
+    if (!hasListener) {
+        canvas.addEventListener('click', ClickHandle);
+        hasListener = true
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    DrawGrid();
 }

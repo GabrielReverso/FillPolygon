@@ -10,12 +10,37 @@
 
 <body>
     <header>
-        <h1>Fill Polygon</h1>
+        <h1>FILL POLYGON</h1>
     </header>
     <main>
         <canvas width="2000" height="2000"></canvas>
-        <aside id="menu"></aside>
-        <button id="menu-button" onclick="ToggleMenu()"></button>
+        <aside id="menu">
+            <h2>CLOSE POLYGON</h2>
+            <button onclick="ClosePolygon()">Close it!</button>
+            <h2>CHOOSE COLOR</h2>
+            <div id="color-selector">
+                <div class="aqua-button"></div>
+                <div class="fuchsia-button"></div>
+                <div class="lime-button"></div>
+                <div class="orange-button"></div>
+                <div class="pink-button"></div>
+                <div class="purple-button"></div>
+                <div class="red-button"></div>
+                <div class="silver-button"></div>
+                <div class="teal-button"></div>
+                <div class="yellow-button"></div>
+                <div class="blue-button"></div>
+                <div class="green-button"></div>
+                <div class="gray-button"></div>
+                <div class="maroon-button"></div>
+                <div class="navy-button"></div>
+            </div>
+            <h2>FILL POLYGON</h2>
+            <button>Fill it!</button>
+            <h2>RESET POLYGON</h2>
+            <button class="reset" onclick="Reset()">Reset!</button>
+        </aside>
+        <button id="menu-button" onclick="ToggleMenu()">&#9998</button>
     </main>
     <script>
         const ToggleMenu = () => {

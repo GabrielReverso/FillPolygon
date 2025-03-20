@@ -12,6 +12,7 @@ body {
 }
 
 header {
+	font-weight: bold;
 	user-select: none;
 	font-size: 14px;
 	color: aliceblue;
@@ -33,24 +34,13 @@ canvas {
 	height: 2000px;
 }
 
-aside {
-	position: absolute;
-	align-self: flex-end;
-	right: -100%;
-	top: 60px;
-	width: 300px;
-	height: 100%;
-	background-color: chartreuse;
-	transition: all 0.2s ease-in-out;
-}
-
-aside.visible {
-	right: 0px;
-}
-
 #menu-button {
-	cursor: pointer;
 	position: absolute;
+	font-size: 35px;
+	display: flex;
+	justify-content: center;
+	color: aliceblue;
+	cursor: pointer;
 	right: 10px;
 	top: 70px;
 	width: 50px;
@@ -59,9 +49,183 @@ aside.visible {
 	border: unset;
 	border-radius: 10px;
 	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-	transition: all 0.2s ease-in-out;
+	transition: all 0.3s ease;
 }
 
 #menu-button.visible {
 	right: 310px;
+}
+
+#menu {
+	display: flex;
+	flex-direction: column;
+	color: aliceblue;
+	box-sizing: border-box;
+	position: absolute;
+	align-self: flex-end;
+	right: -100%;
+	top: 60px;
+	width: 300px;
+	height: 100%;
+	filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.5));
+	background-color: rgb(133, 86, 194);
+	transition: all 0.3s ease;
+	padding: 20px;
+}
+
+#menu.visible {
+	right: 0px;
+}
+
+#menu h2 {
+	text-align: center;
+	margin-block: 1em;
+}
+
+#menu button {
+	all: unset;
+	color: aliceblue;
+	font-weight: bold;
+	cursor: pointer;
+	background-color: rgb(113, 68, 172);
+	text-align: center;
+	padding-block: 10px;
+	margin-inline: 15px;
+	border-radius: 10px;
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.623));
+	transition: all 0.2s ease;
+}
+
+#menu button:hover {
+	background-color: rgb(100, 55, 158);
+}
+
+#menu button.reset {
+	background-color: rgb(212, 36, 36);
+}
+
+#menu button.reset:hover {
+	background-color: rgb(158, 16, 16);
+}
+
+#color-selector {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(5, 1fr);
+	grid-column-gap: 20px;
+	grid-row-gap: 20px;
+}
+
+#color-selector > div {
+	box-sizing: border-box;
+	cursor: pointer;
+	height: 40px;
+	border-radius: 5px;
+	border: 2px solid rgb(85, 31, 155);
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+.aqua-button {
+	height: 100%;
+	width: 100%;
+	background-color: aqua;
+	grid-area: 1 / 1 / 2 / 2;
+}
+
+.fuchsia-button {
+	height: 100%;
+	width: 100%;
+	background-color: fuchsia;
+	grid-area: 1 / 2 / 2 / 3;
+}
+
+.lime-button {
+	height: 100%;
+	width: 100%;
+	background-color: lime;
+	grid-area: 1 / 3 / 2 / 4;
+}
+
+.orange-button {
+	height: 100%;
+	width: 100%;
+	background-color: orange;
+	grid-area: 2 / 1 / 3 / 2;
+}
+
+.pink-button {
+	height: 100%;
+	width: 100%;
+	background-color: pink;
+	grid-area: 2 / 2 / 3 / 3;
+}
+
+.purple-button {
+	height: 100%;
+	width: 100%;
+	background-color: purple;
+	grid-area: 2 / 3 / 3 / 4;
+}
+
+.red-button {
+	height: 100%;
+	width: 100%;
+	background-color: red;
+	grid-area: 3 / 1 / 4 / 2;
+}
+
+.silver-button {
+	height: 100%;
+	width: 100%;
+	background-color: silver;
+	grid-area: 3 / 2 / 4 / 3;
+}
+
+.teal-button {
+	height: 100%;
+	width: 100%;
+	background-color: teal;
+	grid-area: 3 / 3 / 4 / 4;
+}
+
+.yellow-button {
+	height: 100%;
+	width: 100%;
+	background-color: yellow;
+	grid-area: 4 / 1 / 5 / 2;
+}
+
+.blue-button {
+	height: 100%;
+	width: 100%;
+	background-color: blue;
+	grid-area: 4 / 2 / 5 / 3;
+}
+
+.green-button {
+	height: 100%;
+	width: 100%;
+	background-color: green;
+	grid-area: 4 / 3 / 5 / 4;
+}
+
+.gray-button {
+	height: 100%;
+	width: 100%;
+	background-color: gray;
+	grid-area: 5 / 1 / 6 / 2;
+}
+
+.maroon-button {
+	height: 100%;
+	width: 100%;
+	background-color: maroon;
+	grid-area: 5 / 2 / 6 / 3;
+}
+
+.navy-button {
+	height: 100%;
+	width: 100%;
+	background-color: navy;
+	grid-area: 5 / 3 / 6 / 4;
 }
