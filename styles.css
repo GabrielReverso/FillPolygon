@@ -108,6 +108,7 @@ canvas {
 	background-color: rgb(133, 86, 194);
 	transition: all 0.3s ease;
 	padding: 20px;
+	padding-top: 0;
 }
 
 #menu.visible {
@@ -160,6 +161,11 @@ canvas {
 	border-radius: 5px;
 	border: 2px solid rgb(85, 31, 155);
 	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+	transition: all 0.2s ease;
+}
+
+#color-selector > div:hover {
+	scale: 1.1;
 }
 
 .aqua-button {
