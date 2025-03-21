@@ -1,37 +1,38 @@
 // Get canvas
 const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+ctx.imageSmoothingEnabled = false;
 
 // Get window size
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 
-//IIFE (Immediately Invoked Function Expression) to create the canvas grid
+// IIFE (Immediately Invoked Function Expression) to create the canvas grid
 (() => DrawGrid())();
 
 // Variables
-let fillColor = 'red'
-let hasListener = true
+let fillColor = [255, 0, 0, 255];
+let hasListener = true;
 const canvasArea = canvas.getBoundingClientRect();
-const nodeArray = []
+const nodeArray = [];
+let polygonEdges = [];
 const firstNode = {
     x: 0,
     y: 0
-}
-Object.seal(firstNode)
+};
+Object.seal(firstNode);
 
 // Add click event to canvas
 canvas.addEventListener('click', ClickHandle);
 
-/***********************FUNCTIONS***********************/
+/*********************** FUNCTIONS ***********************/
 
 function DrawGrid() {
-	ctx.fillStyle = 'white'
-	ctx.fillRect(0, 0, windowWidth, windowHeight - 60)
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, windowWidth, windowHeight - 60);
 
-    const cellSize = 20
-    const color = '#cccccc57'
-    // Grid style
+    const cellSize = 20;
+    const color = 'rgba(236, 236, 236, 1)';
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
 
@@ -51,35 +52,21 @@ function DrawGrid() {
         ctx.stroke();
     }
 
-    ctx.closePath()
+    ctx.closePath();
 }
 
 function ClickHandle(event) {
-    // Remove first node from array
-    if (nodeArray.length === 2) {
-        nodeArray.shift()
-    }
-
-    // Get mouse coordinates
     const x_pos = event.clientX - canvasArea.left;
     const y_pos = event.clientY - canvasArea.top;
 
-    // Draw node
     DrawNode(x_pos, y_pos);
 
-    // Save first node
-    if (nodeArray.length === 0) {
-        firstNode.x = x_pos
-        firstNode.y = y_pos
+    if (nodeArray.length >= 1) {
+        const lastNode = nodeArray[nodeArray.length - 1];
+        DrawLine('black', lastNode.x, lastNode.y, x_pos, y_pos);
     }
 
-    // Push the node position to the array
-    nodeArray.push({ x: x_pos, y: y_pos })
-
-    // If nodeArray has 2 nodes, draw a line and shift the older value
-    if (nodeArray.length === 2) {
-        DrawLine('black', nodeArray[0].x, nodeArray[0].y, nodeArray[1].x, nodeArray[1].y);
-    }
+    nodeArray.push({ x: x_pos, y: y_pos });
 }
 
 function DrawNode(x, y) {
@@ -90,63 +77,98 @@ function DrawNode(x, y) {
     ctx.closePath();
 }
 
-function DrawLine(color = 'black', x_start, y_start, x_end, y_end) {
+function DrawLine(color = 'black', x_start, y_start, x_end, y_end, width = 2) {
     ctx.beginPath();
-    ctx.moveTo(x_start, y_start)
-    ctx.lineTo(x_end, y_end)
-    ctx.strokeStyle = color
-	ctx.lineWidth = 2
+    ctx.moveTo(x_start, y_start);
+    ctx.lineTo(x_end, y_end);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
     ctx.stroke();
     ctx.closePath();
 }
 
 function ClosePolygon() {
-    if (nodeArray.length === 2) {
-        nodeArray.shift();
-        nodeArray.push(firstNode);
-        DrawLine('black', nodeArray[0].x, nodeArray[0].y, nodeArray[1].x, nodeArray[1].y);
-        nodeArray.splice(0, nodeArray.length)
+    if (nodeArray.length >= 3) {
+        const first = nodeArray[0];
+        const last = nodeArray[nodeArray.length - 1];
+        DrawLine('black', last.x, last.y, first.x, first.y);
+
+        polygonEdges = [];
+        for (let i = 0; i < nodeArray.length; i++) {
+            const nextIndex = (i + 1) % nodeArray.length;
+            polygonEdges.push({
+                x1: nodeArray[i].x,
+                y1: nodeArray[i].y,
+                x2: nodeArray[nextIndex].x,
+                y2: nodeArray[nextIndex].y
+            });
+        }
+
+        nodeArray.length = 0;
         canvas.removeEventListener('click', ClickHandle);
-        hasListener = false
-    } else {
-        return
+        hasListener = false;
     }
 }
 
 function Reset() {
     if (!hasListener) {
         canvas.addEventListener('click', ClickHandle);
-        hasListener = true
+        hasListener = true;
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     DrawGrid();
+    polygonEdges = [];
 }
 
 async function StartScanLine() {
-    const boundaryArray = []
-    for(let y = 0; y <= windowHeight - 60; y++) {
-        for(let x = 0; x <= windowWidth; x++) {
-			/* if(!isBoundaryPixel(x, y)){
-				ctx.fillStyle = fillColor;
-				ctx.fillRect(x, y, 1, 1);
-			} */
-			if (isBoundaryPixel(x, y)){
-				console.log({x: x, y: y})
-				boundaryArray.push({x: x, y: y})
-			}
+    const color = fillColor;
+
+    for (let y = 0; y <= windowHeight - 60; y++) {
+        const intersections = [];
+
+        for (const edge of polygonEdges) {
+            const x1 = edge.x1, y1 = edge.y1;
+            const x2 = edge.x2, y2 = edge.y2;
+
+            if (y1 === y2) continue; // Ignorar arestas horizontais
+
+            const yMin = Math.min(y1, y2);
+            const yMax = Math.max(y1, y2);
+
+            if (y >= yMin && y < yMax) {
+                const t = (y - y1) / (y2 - y1);
+                const x = x1 + t * (x2 - x1);
+                intersections.push(x);
+            }
         }
-		if (boundaryArray.length >= 2) {
-			/* for (let i = 0; i <= boundaryArray.length - 1; i += 2) {
-				DrawLine(fillColor, boundaryArray[i].x, boundaryArray[i].j, boundaryArray[i+1].x, boundaryArray[i+1].y)
-			} */
-		}
-		boundaryArray.splice(0, boundaryArray.length)
-        await applyDelay(() => console.log("Delay complete"), 50);
+
+        intersections.sort((a, b) => a - b);
+
+        const imageData = ctx.getImageData(0, y, windowWidth, 1);
+        const data = imageData.data;
+
+        for (let i = 0; i < intersections.length; i += 2) {
+            if (i + 1 >= intersections.length) break;
+
+            const xStart = Math.ceil(intersections[i]);
+            const xEnd = Math.floor(intersections[i + 1]);
+
+            for (let x = xStart; x <= xEnd; x++) {
+                if (x < 0 || x >= windowWidth) continue;
+                const idx = x * 4;
+                data[idx] = color[0];
+                data[idx + 1] = color[1];
+                data[idx + 2] = color[2];
+                data[idx + 3] = color[3];
+            }
+        }
+
+        ctx.putImageData(imageData, 0, y);
+        await applyDelay(() => { }, 50);
     }
 }
 
-
-/************************AUX****************************/
+/*********************** AUX ****************************/
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -156,17 +178,6 @@ async function applyDelay(callback, delayMs) {
     callback();
 }
 
-function isBoundaryPixel(x, y) {
-    const imageData = ctx.getImageData(x, y, 1, 1);
-    const data = imageData.data;
-    
-    return (
-    	data[0] < 80 &&
-        data[1] < 80 &&
-        data[2] < 80
-    );
-}
-
 function setFillColor(color) {
-	fillColor = color
+    fillColor = color;
 }
