@@ -191,6 +191,11 @@ async function applyDelay(callback, delayMs) {
     callback();
 }
 
-function setFillColor(color) {
+function setFillColor(color, event) {
     fillColor = color;
+    const colorButtons = document.querySelectorAll("#color-selector > div")
+    for(let button of colorButtons) {
+        button.classList.remove("selected");
+    }
+    event.target.classList.add("selected");
 }
