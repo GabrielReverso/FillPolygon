@@ -148,6 +148,25 @@ canvas {
 	background-color: rgb(158, 16, 16);
 }
 
+#menu .checkbox {
+	display: flex;
+	color: aliceblue;
+	font-weight: bold;
+	text-align: center;
+	padding-bottom: 20px;
+	margin-inline: 18px;
+	gap: 10px;
+}
+
+#menu input[type=checkbox]
+{
+  -ms-transform: scale(1.4); /* IE */
+  -moz-transform: scale(1.4); /* FF */
+  -webkit-transform: scale(1.4); /* Safari and Chrome */
+  -o-transform: scale(1.4); /* Opera */
+    transform: scale(1.4);
+}
+
 #color-selector {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);

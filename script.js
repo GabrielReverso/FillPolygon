@@ -6,15 +6,21 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 
-// IIFE (Immediately Invoked Function Expression) to create the canvas grid
-(() => DrawGrid())();
+
+// IIFE (Immediately Invoked Function Expression)
+(() => {
+    const checkbox = document.getElementById('apply-delay')
+    checkbox.checked = false
+})()
 
 // Variables
 let fillColor = [255, 0, 0, 255];
 let hasListener = true;
 const canvasArea = canvas.getBoundingClientRect();
 const nodeArray = [];
-let polygonEdges = [];
+let polygonEdges = []
+let closed = false;
+let hasDelay = false;
 
 // Add click event to canvas
 canvas.addEventListener('click', ClickHandle);
@@ -49,6 +55,9 @@ function DrawGrid() {
     ctx.closePath();
 }
 
+// Exec DrawGrid
+DrawGrid();
+
 function ClickHandle(event) {
     const x_pos = event.clientX - canvasArea.left;
     const y_pos = event.clientY - canvasArea.top;
@@ -82,25 +91,27 @@ function DrawLine(color = 'black', x_start, y_start, x_end, y_end, width = 2) {
 }
 
 function ClosePolygon() {
-    if (nodeArray.length >= 3) {
-        const first = nodeArray[0];
-        const last = nodeArray[nodeArray.length - 1];
-        DrawLine('black', last.x, last.y, first.x, first.y);
-
-        polygonEdges = [];
-        for (let i = 0; i < nodeArray.length; i++) {
-            const nextIndex = (i + 1) % nodeArray.length;
-            polygonEdges.push({
-                x1: nodeArray[i].x,
-                y1: nodeArray[i].y,
-                x2: nodeArray[nextIndex].x,
-                y2: nodeArray[nextIndex].y
-            });
+    if (!closed) {
+        if (nodeArray.length >= 3) {
+            const first = nodeArray[0];
+            const last = nodeArray[nodeArray.length - 1];
+            DrawLine('black', last.x, last.y, first.x, first.y);
+    
+            polygonEdges = [];
+            for (let i = 0; i < nodeArray.length; i++) {
+                const nextIndex = (i + 1) % nodeArray.length;
+                polygonEdges.push({
+                    x1: nodeArray[i].x,
+                    y1: nodeArray[i].y,
+                    x2: nodeArray[nextIndex].x,
+                    y2: nodeArray[nextIndex].y
+                });
+            }
+    
+            canvas.removeEventListener('click', ClickHandle);
+            hasListener = false;
+            closed = true;
         }
-
-        nodeArray.length = 0;
-        canvas.removeEventListener('click', ClickHandle);
-        hasListener = false;
     }
 }
 
@@ -109,75 +120,104 @@ function Reset() {
         canvas.addEventListener('click', ClickHandle);
         hasListener = true;
     }
+    nodeArray.length = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     DrawGrid();
     polygonEdges = [];
+
+    const colorButtons = document.querySelectorAll('.color-button')
+
+    for(let button of colorButtons){
+        button.style.pointerEvents = ''
+    }
+
+    document.getElementById("apply-delay").style.pointerEvents = ''
 }
 
 async function StartScanLine() {
-    // Get fill color components [R, G, B, A]
-    const color = fillColor;
+    if (closed){
+        console.log("Start scanline");
 
-    // Iterate through every vertical line (Y-axis)
-    for (let y = 0; y <= windowHeight - 60; y++) {
-        const intersections = []; // Stores X-coordinates of edge intersections
+        const colorButtons = document.querySelectorAll('.color-button')
 
-        // Process each polygon edge
-        for (const edge of polygonEdges) {
-            const x1 = edge.x1, y1 = edge.y1;
-            const x2 = edge.x2, y2 = edge.y2;
-
-            // Skip horizontal edges
-            if (y1 === y2) continue;
-
-            // Determine vertical bounds of the edge
-            const yMin = Math.min(y1, y2);
-            const yMax = Math.max(y1, y2);
-
-            // Check if current scanline is within edge's vertical range
-            if (y >= yMin && y < yMax) {
-                // Calculate intersection point using linear interpolation
-                const t = (y - y1) / (y2 - y1); // Normalized position along edge
-                const x = x1 + t * (x2 - x1); // X-coordinate of intersection
-                intersections.push(x);
-            }
+        for(let button of colorButtons){
+            button.style.pointerEvents = 'none'
         }
 
-        // Sort intersections left-to-right for proper pairing
-        intersections.sort((a, b) => a - b);
+        document.getElementById("apply-delay").style.pointerEvents = 'none'
+        
+        // Get fill color components [R, G, B, A]
+        const color = fillColor;
 
-        // Get pixel data for current scanline
-        const imageData = ctx.getImageData(0, y, windowWidth, 1);
-        const data = imageData.data;
-
-        // Fill between pairs of intersections (even-odd rule)
-        for (let i = 0; i < intersections.length; i += 2) {
-            if (i + 1 >= intersections.length) break; // Handle odd number of intersections
-
-            // Convert floating-point intersections to integer pixel coordinates
-            const xStart = Math.ceil(intersections[i]); // Round up left boundary
-            const xEnd = Math.floor(intersections[i + 1]); // Round down right boundary
-
-            // Fill pixels between boundaries
-            for (let x = xStart; x <= xEnd; x++) {
-                if (x < 0 || x >= windowWidth) continue; // Skip out-of-bounds pixels
-
-                // Calculate pixel index in RGBA array (4 bytes per pixel)
-                const idx = x * 4;
-
-                // Set pixel color components
-                data[idx] = color[0];     // Red
-                data[idx + 1] = color[1]; // Green
-                data[idx + 2] = color[2]; // Blue
-                data[idx + 3] = color[3]; // Alpha
+        const yStart = Math.min(...nodeArray.map(point => point.y));
+        const yEnd = Math.max(...nodeArray.map(point => point.y));
+    
+        // Iterate through every vertical line (Y-axis)
+        for (let y = yStart; y <= yEnd; y++) {
+            const intersections = []; // Stores X-coordinates of edge intersections
+    
+            // Process each polygon edge
+            for (const edge of polygonEdges) {
+                const x1 = edge.x1, y1 = edge.y1;
+                const x2 = edge.x2, y2 = edge.y2;
+    
+                // Skip horizontal edges
+                if (y1 === y2) continue;
+    
+                // Determine vertical bounds of the edge
+                const yMin = Math.min(y1, y2);
+                const yMax = Math.max(y1, y2);
+    
+                // Check if current scanline is within edge's vertical range
+                if (y >= yMin && y < yMax) {
+                    // Calculate intersection point using linear interpolation
+                    const t = (y - y1) / (y2 - y1); // Normalized position along edge
+                    const x = x1 + t * (x2 - x1); // X-coordinate of intersection
+                    intersections.push(x);
+                }
+            }
+    
+            // Sort intersections left-to-right for proper pairing
+            intersections.sort((a, b) => a - b);
+    
+            // Get pixel data for current scanline
+            const imageData = ctx.getImageData(0, y, windowWidth, 1);
+            const data = imageData.data;
+    
+            // Fill between pairs of intersections (even-odd rule)
+            for (let i = 0; i < intersections.length; i += 2) {
+                if (i + 1 >= intersections.length) break; // Handle odd number of intersections
+    
+                // Convert floating-point intersections to integer pixel coordinates
+                const xStart = Math.ceil(intersections[i]); // Round up left boundary
+                const xEnd = Math.floor(intersections[i + 1]); // Round down right boundary
+    
+                // Fill pixels between boundaries
+                for (let x = xStart; x <= xEnd; x++) {
+                    if (x < 0 || x >= windowWidth) continue; // Skip out-of-bounds pixels
+    
+                    // Calculate pixel index in RGBA array (4 bytes per pixel)
+                    const idx = x * 4;
+    
+                    // Set pixel color components
+                    data[idx] = color[0];     // Red
+                    data[idx + 1] = color[1]; // Green
+                    data[idx + 2] = color[2]; // Blue
+                    data[idx + 3] = color[3]; // Alpha
+                }
+            }
+    
+            // Update scanline in canvas
+            ctx.putImageData(imageData, 0, y);
+    
+            if(hasDelay) {
+                // Add delay for visualization effect (optional)
+                await applyDelay(() => { }, 50);
             }
         }
-
-        // Update scanline in canvas
-        ctx.putImageData(imageData, 0, y);
-
-        // Add delay for visualization effect (optional)
-        await applyDelay(() => { }, 50);
+        console.log("End scanline");
+    } else {
+        alert("Close the polygon before filling")
     }
 }
 
@@ -198,4 +238,8 @@ function setFillColor(color, event) {
         button.classList.remove("selected");
     }
     event.target.classList.add("selected");
+}
+
+function setHasDelay(event) {
+    hasDelay = event.target.checked;
 }

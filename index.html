@@ -19,23 +19,27 @@
             <button onclick="ClosePolygon()">Close it!</button>
             <h2>CHOOSE COLOR</h2>
             <div id="color-selector">
-                <div onclick="setFillColor([0, 255, 255, 255], event)" class="aqua-button"></div>
-                <div onclick="setFillColor([255, 0, 255, 255], event)" class="fuchsia-button"></div>
-                <div onclick="setFillColor([0, 255, 0, 255], event)" class="lime-button"></div>
-                <div onclick="setFillColor([255, 165, 0, 255], event)" class="orange-button"></div>
-                <div onclick="setFillColor([255, 192, 203, 255], event)" class="pink-button"></div>
-                <div onclick="setFillColor([128, 0, 128, 255], event)" class="purple-button"></div>
-                <div onclick="setFillColor([255, 0, 0, 255], event)" class="red-button"></div>
-                <div onclick="setFillColor([192, 192, 192, 255], event)" class="silver-button"></div>
-                <div onclick="setFillColor([0, 128, 128, 255], event)" class="teal-button"></div>
-                <div onclick="setFillColor([255, 255, 0, 255], event)" class="yellow-button"></div>
-                <div onclick="setFillColor([0, 0, 255, 255], event)" class="blue-button"></div>
-                <div onclick="setFillColor([0, 128, 0, 255], event)" class="green-button"></div>
-                <div onclick="setFillColor([128, 128, 128, 255], event)" class="gray-button"></div>
-                <div onclick="setFillColor([128, 0, 0, 255], event)" class="maroon-button"></div>
-                <div onclick="setFillColor([0, 0, 128, 255], event)" class="navy-button"></div>
+                <div onclick="setFillColor([0, 255, 255, 255], event)" class="color-button aqua-button"></div>
+                <div onclick="setFillColor([255, 0, 255, 255], event)" class="color-button fuchsia-button"></div>
+                <div onclick="setFillColor([0, 255, 0, 255], event)" class="color-button lime-button"></div>
+                <div onclick="setFillColor([255, 165, 0, 255], event)" class="color-button orange-button"></div>
+                <div onclick="setFillColor([255, 192, 203, 255], event)" class="color-button pink-button"></div>
+                <div onclick="setFillColor([128, 0, 128, 255], event)" class="color-button purple-button"></div>
+                <div onclick="setFillColor([255, 0, 0, 255], event)" class="color-button red-button"></div>
+                <div onclick="setFillColor([192, 192, 192, 255], event)" class="color-button silver-button"></div>
+                <div onclick="setFillColor([0, 128, 128, 255], event)" class="color-button teal-button"></div>
+                <div onclick="setFillColor([255, 255, 0, 255], event)" class="color-button yellow-button"></div>
+                <div onclick="setFillColor([0, 0, 255, 255], event)" class="color-button blue-button"></div>
+                <div onclick="setFillColor([0, 128, 0, 255], event)" class="color-button green-button"></div>
+                <div onclick="setFillColor([128, 128, 128, 255], event)" class="color-button gray-button"></div>
+                <div onclick="setFillColor([128, 0, 0, 255], event)" class="color-button maroon-button"></div>
+                <div onclick="setFillColor([0, 0, 128, 255], event)" class="color-button navy-button"></div>
             </div>
             <h2>FILL POLYGON</h2>
+            <div class="checkbox">
+                <input value="false" onchange="setHasDelay(event)" id="apply-delay" type="checkbox">
+                <label for="apply-delay">Apply Delay?</label>
+            </div>
             <button onclick="StartScanLine()">Fill it!</button>
             <h2>RESET POLYGON</h2>
             <button class="reset" onclick="Reset()">Reset!</button>
